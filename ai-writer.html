@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Writer</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  background: #f5f5f5; color: #1a1a1a; padding: 24px;
+  max-width: 720px; margin: 0 auto;
+}
+h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.sub { font-size: 13px; color: #999; margin-bottom: 20px; }
+.setup { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.setup label { font-size: 12px; font-weight: 600; color: #555; display: block; margin-bottom: 4px; }
+.setup input, .setup select { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; font-family: inherit; margin-bottom: 8px; outline: none; }
+.setup input:focus, .setup select:focus { border-color: #6c4ef2; }
+.row { display: flex; gap: 8px; }
+.row button { flex: 1; padding: 8px; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; }
+.btn-save { background: #6c4ef2; color: #fff; font-weight: 600; }
+.btn-clear { background: #f3f4f6; color: #555; }
+.main { display: flex; gap: 12px; margin-bottom: 12px; }
+.main textarea {
+  flex: 1; height: 200px; padding: 14px; border: 1px solid #ddd; border-radius: 12px;
+  font-size: 14px; font-family: inherit; line-height: 1.6; resize: vertical; outline: none;
+}
+.main textarea:focus { border-color: #6c4ef2; }
+.actions { display: flex; gap: 8px; margin-bottom: 16px; }
+.actions button {
+  flex: 1; padding: 12px; border: none; border-radius: 10px;
+  font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity 0.12s;
+}
+.btn-polish { background: #6c4ef2; color: #fff; }
+.btn-translate { background: #2563eb; color: #fff; }
+.btn-copy { background: #f3f4f6; color: #1a1a1a; font-weight: 500; }
+.actions button:hover { opacity: 0.9; }
+.status { text-align: center; font-size: 13px; color: #999; min-height: 20px; }
+.status.loading { color: #6c4ef2; }
+.status.error { color: #dc2626; }
+.status.ok { color: #16a34a; }
+</style>
+</head>
+<body>
+<h1>AI Writer</h1>
+<p class="sub">粘贴文字 → 一键润色或翻译 · 不收集任何数据</p>
+
+<div class="setup">
+  <label>API Key（DeepSeek 推荐，¥0.002/次）</label>
+  <div class="row">
+    <input id="api-key" type="password" placeholder="sk-..." autocomplete="off">
+    <button class="btn-save" onclick="saveKey()">保存</button>
+    <button class="btn-clear" onclick="clearKey()">清除</button>
+  </div>
+  <div style="font-size:11px;color:#aaa;margin-top:2px"><a href="https://platform.deepseek.com/api_keys" target="_blank" style="color:#6c4ef2">获取 Key</a> · Key 仅保存在浏览器本地</div>
+</div>
+
+<div class="main">
+  <textarea id="input" placeholder="在此粘贴或输入文字..."></textarea>
+  <textarea id="output" placeholder="结果将显示在这里..." readonly></textarea>
+</div>
+
+<div class="actions">
+  <button class="btn-polish" onclick="process('polish')">润色</button>
+  <button class="btn-translate" onclick="process('translate')">翻译</button>
+  <button class="btn-copy" onclick="copyOutput()">复制结果</button>
+</div>
+<div class="status" id="status"></div>
+
+<script>
+const KEY = 'aiwriter_key';
+
+function saveKey() {
+  const k = document.getElementById('api-key').value.trim();
+  if (!k) return;
+  localStorage.setItem(KEY, k);
+  setStatus('已保存', 'ok');
+}
+
+function clearKey() {
+  localStorage.removeItem(KEY);
+  document.getElementById('api-key').value = '';
+  setStatus('已清除', 'ok');
+}
+
+function getKey() {
+  const k = localStorage.getItem(KEY);
+  if (k) document.getElementById('api-key').value = k;
+  return k || document.getElementById('api-key').value.trim();
+}
+
+function setStatus(msg, type) {
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  el.className = 'status ' + (type || '');
+}
+
+function detectLang(text) {
+  const cjk = (text.match(/[\u4e00-\u9fff]/g) || []).length;
+  const total = text.replace(/\s/g, '').length;
+  return total > 0 && cjk / total > 0.3;
+}
+
+async function process(action) {
+  const key = getKey();
+  if (!key) return setStatus('请先设置 API Key', 'error');
+
+  const text = document.getElementById('input').value.trim();
+  if (!text) return setStatus('请先输入文字', 'error');
+
+  setStatus('处理中...', 'loading');
+
+  const isCn = detectLang(text);
+
+  let system, prompt;
+  if (action === 'polish') {
+    if (isCn) {
+      system = '你是专业中文写作者。只输出润色后的文本。';
+      prompt = `润色以下文字，使其更流畅、更有力，保持原意：\n\n${text}\n\n润色后：`;
+    } else {
+      system = 'You are a professional English writer. Output only polished text.';
+      prompt = `Polish the following text to be clearer and more impactful:\n\n${text}\n\nPolished:`;
+    }
+  } else {
+    if (isCn) {
+      system = '你是专业翻译。只输出英文译文。';
+      prompt = `将以下中文翻译成自然、地道的英文：\n\n${text}\n\n译文：`;
+    } else {
+      system = '你是专业翻译。只输出中文译文。';
+      prompt = `将以下英文翻译成自然、地道的中文：\n\n${text}\n\n译文：`;
+    }
+  }
+
+  try {
+    const resp = await fetch('https://api.deepseek.com/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${key}`,
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [
+          { role: 'system', content: system },
+          { role: 'user', content: prompt },
+        ],
+        temperature: 0.7,
+        max_tokens: 2048,
+      }),
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error?.message || `HTTP ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    document.getElementById('output').value = data.choices[0].message.content;
+    setStatus('完成 ✓', 'ok');
+  } catch (e) {
+    setStatus(e.message, 'error');
+  }
+}
+
+function copyOutput() {
+  const el = document.getElementById('output');
+  if (!el.value) return;
+  el.select();
+  document.execCommand('copy');
+  setStatus('已复制 ✓', 'ok');
+}
+
+// 加载已保存的 Key
+if (localStorage.getItem(KEY)) {
+  document.getElementById('api-key').value = localStorage.getItem(KEY);
+}
+</script>
+</body>
+</html>
