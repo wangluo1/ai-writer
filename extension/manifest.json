@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "AI 写作助手 · 润色 & 翻译",
+  "version": "0.2.0",
+  "description": "选中文字，一键润色或中英互译。3-Agent 流水线保证质量：Writer→Checker→Editor。",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://api.deepseek.com/*",
+    "https://api.openai.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "AI 写作助手"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

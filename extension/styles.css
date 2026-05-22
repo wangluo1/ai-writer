@@ -1,0 +1,114 @@
+/* ═══════════════════════════════════════════
+   AI 写作助手 — 浮动菜单 & 结果面板
+   ═══════════════════════════════════════════ */
+
+#aiw-menu, #aiw-panel, #aiw-menu *, #aiw-panel * {
+  box-sizing: border-box; margin: 0; padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+/* ═══════════ 浮动菜单 ═══════════ */
+#aiw-menu {
+  position: absolute; z-index: 2147483647;
+  display: flex; gap: 4px; padding: 5px;
+  background: #fff; border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05);
+  opacity: 0; pointer-events: none;
+  transform: translateY(3px);
+  transition: opacity 0.12s, transform 0.12s;
+  user-select: none; white-space: nowrap;
+}
+#aiw-menu.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+
+.aiw-menu-btn {
+  border: none; background: transparent;
+  padding: 7px 14px; border-radius: 7px;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: background 0.1s; color: #555;
+}
+.aiw-menu-btn:hover { background: #f5f5f5; }
+.aiw-menu-polish { color: #6c4ef2; }
+.aiw-menu-polish:hover { background: #f5f0ff; }
+.aiw-menu-translate { color: #2563eb; }
+.aiw-menu-translate:hover { background: #eff4ff; }
+
+/* ═══════════ 结果面板 ═══════════ */
+#aiw-panel {
+  position: absolute; z-index: 2147483646;
+  min-width: 200px; max-width: 480px;
+  max-height: 80vh;
+  background: #ffffff; border: 1px solid #e0e0e0;
+  border-radius: 16px; padding: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.15s;
+  overflow-y: auto;
+}
+#aiw-panel.visible { opacity: 1; pointer-events: auto; }
+
+/* Header */
+.aiw-panel-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px;
+}
+.aiw-panel-label {
+  display: flex; align-items: center; gap: 6px;
+}
+.aiw-panel-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #6c4ef2; flex-shrink: 0;
+}
+.aiw-panel-label-text {
+  font-size: 13px; color: #6c4ef2; font-weight: 500;
+}
+.aiw-panel-close {
+  background: none; border: none; cursor: pointer;
+  color: #aaa; font-size: 18px; line-height: 1;
+  padding: 0 2px;
+}
+.aiw-panel-close:hover { color: #555; }
+
+/* Result */
+.aiw-output {
+  background: #f5f5f5; border-radius: 10px;
+  padding: 14px 16px; margin-bottom: 16px;
+  font-size: 20px; color: #1a1a1a;
+  font-weight: 500; line-height: 1.6;
+  white-space: pre-wrap; word-break: break-word;
+  min-height: 44px;
+}
+
+/* Loading */
+.aiw-loading {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; padding: 16px 0;
+}
+.aiw-spinner {
+  width: 18px; height: 18px;
+  border: 2px solid #e8e8e8;
+  border-top-color: #6c4ef2;
+  border-radius: 50%;
+  animation: aiw-spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes aiw-spin { to { transform: rotate(360deg); } }
+.aiw-step-label { color: #999; font-size: 13px; }
+
+/* Actions */
+.aiw-actions { display: flex; gap: 8px; }
+.aiw-act-btn {
+  flex: 1; padding: 10px; border-radius: 10px;
+  font-size: 14px; font-weight: 500; cursor: pointer;
+  transition: all 0.12s;
+}
+.aiw-act-copy {
+  background: #f5f5f5; border: 1px solid #ddd; color: #1a1a1a;
+}
+.aiw-act-copy:hover { background: #e8e8e8; }
+.aiw-act-replace {
+  background: #6c4ef2; border: none; color: #ffffff;
+}
+.aiw-act-replace:hover { background: #5a3de0; }
+
+/* Error */
+.aiw-error { color: #dc2626; padding: 16px 0; text-align: center; font-size: 13px; }

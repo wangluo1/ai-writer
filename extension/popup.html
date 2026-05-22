@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 320px; padding: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 13px; color: #333; background: #fff;
+  }
+  h1 { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
+  .brand { background: linear-gradient(135deg, #7c3aed, #2563eb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .sub { font-size: 11px; color: #aaa; margin-bottom: 14px; }
+  label { display: block; font-size: 12px; font-weight: 600; color: #555; margin: 10px 0 4px; }
+  select, input[type=text], input[type=password], textarea {
+    width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 7px;
+    font-size: 13px; font-family: inherit; outline: none; transition: border-color 0.12s;
+  }
+  select:focus, input:focus, textarea:focus { border-color: #7c3aed; }
+  .row { display: flex; gap: 6px; }
+  .row input { flex: 1; }
+  .hint { font-size: 11px; color: #aaa; margin: 3px 0 0; }
+  .hint a { color: #7c3aed; text-decoration: none; }
+  textarea { height: 80px; resize: vertical; font-size: 13px; }
+  .btn {
+    width: 100%; padding: 10px; margin-top: 12px; border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 600; cursor: pointer; color: #fff;
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+  }
+  .btn:hover { opacity: 0.92; }
+  .btn-sec {
+    background: #f5f5f5; color: #555; font-weight: 500;
+  }
+  .status { text-align: center; font-size: 12px; margin-top: 8px; min-height: 18px; }
+  .status.ok { color: #16a34a; }
+  .status.err { color: #dc2626; }
+  hr { border: none; border-top: 1px solid #f0f0f0; margin: 14px 0; }
+</style>
+</head>
+<body>
+  <h1><span class="brand" data-i18n="title">AI 写作助手</span></h1>
+  <p class="sub" data-i18n="subtitle">选中文字 · 一键润色 · 中英互译</p>
+
+  <label data-i18n="model_label">模型</label>
+  <select id="provider">
+    <option value="deepseek" data-i18n="model_deepseek">DeepSeek（推荐 · 最便宜）</option>
+    <option value="openai" data-i18n="model_openai">OpenAI（质量好）</option>
+    <option value="custom" data-i18n="model_custom">自定义 API（兼容 OpenAI 格式）</option>
+  </select>
+
+  <label data-i18n="ui_lang_label">界面语言</label>
+  <select id="ui-lang">
+    <option value="zh" data-i18n="lang_zh">中文</option>
+    <option value="en" data-i18n="lang_en">English</option>
+  </select>
+
+  <div id="deepseek-section">
+    <label>DeepSeek API Key</label>
+    <input id="deepseek-key" type="password" placeholder="sk-..." autocomplete="off">
+    <p class="hint"><a href="https://platform.deepseek.com/api_keys" target="_blank"><span data-i18n="get_key">获取 Key</span></a> · <span data-i18n="cost_ds">~¥0.002/次</span></p>
+  </div>
+
+  <div id="openai-section" style="display:none">
+    <label>OpenAI API Key</label>
+    <input id="openai-key" type="password" placeholder="sk-..." autocomplete="off">
+    <p class="hint"><a href="https://platform.openai.com/api-keys" target="_blank"><span data-i18n="get_key">获取 Key</span></a> · <span data-i18n="cost_oai">~$0.005/次</span></p>
+  </div>
+
+  <div id="custom-section" style="display:none">
+    <label data-i18n="custom_endpoint">API 地址</label>
+    <input id="custom-endpoint" type="text" placeholder="https://api.openai.com/v1/chat/completions">
+    <label data-i18n="custom_model">模型名称</label>
+    <input id="custom-model" type="text" placeholder="gpt-4o-mini">
+    <label>API Key</label>
+    <input id="custom-key" type="password" placeholder="sk-...">
+  </div>
+
+  <button class="btn" id="save-btn" data-i18n="save">保存设置</button>
+  <div class="status" id="status"></div>
+
+  <hr>
+
+  <label data-i18n="manual_label">手动输入（粘贴文字直接处理）</label>
+  <textarea id="manual-input" data-i18n-placeholder="manual_placeholder" placeholder="在此粘贴或输入文字..."></textarea>
+  <div class="row">
+    <button class="btn btn-sec" id="polish-btn" data-i18n="polish">润色</button>
+    <button class="btn btn-sec" id="translate-btn" data-i18n="translate">翻译</button>
+  </div>
+  <div class="status" id="manual-status"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

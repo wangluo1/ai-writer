@@ -1,0 +1,18 @@
+{
+  "name": "AI Writer",
+  "icon": "symbol:wand.and.stars",
+  "actions": [
+    {
+      "title": "润色",
+      "icon": "symbol:pencil.and.outline",
+      "shellScriptFile": "polish.sh",
+      "requirements": ["text"]
+    },
+    {
+      "title": "翻译",
+      "icon": "symbol:arrow.left.arrow.right",
+      "shellScriptFile": "translate.sh",
+      "requirements": ["text"]
+    }
+  ]
+}

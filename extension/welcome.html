@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>AI 写作助手 · 设置</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    max-width: 440px; margin: 60px auto; padding: 32px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: #333; background: #fafafa;
+  }
+  .card {
+    background: #fff; border-radius: 16px; padding: 32px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  }
+  h1 { font-size: 24px; margin-bottom: 4px; }
+  .brand { background: linear-gradient(135deg, #7c3aed, #2563eb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .sub { font-size: 13px; color: #999; margin-bottom: 24px; }
+  .step { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 20px; }
+  .step-num {
+    flex-shrink: 0; width: 28px; height: 28px;
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+    color: #fff; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+  }
+  .step-body { font-size: 14px; line-height: 1.6; }
+  .step-body strong { color: #1a1a1a; }
+  label { display: block; font-size: 12px; font-weight: 600; color: #555; margin: 16px 0 4px; }
+  select, input {
+    width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px;
+    font-size: 14px; font-family: inherit; outline: none;
+  }
+  select:focus, input:focus { border-color: #7c3aed; }
+  .hint { font-size: 12px; color: #aaa; margin-top: 4px; }
+  .hint a { color: #7c3aed; }
+  .btn {
+    width: 100%; margin-top: 20px; padding: 12px; border: none; border-radius: 10px;
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+    color: #fff; font-size: 15px; font-weight: 600; cursor: pointer;
+  }
+  .btn:hover { opacity: 0.92; }
+  .status { text-align: center; font-size: 13px; margin-top: 12px; min-height: 20px; }
+  .status.ok { color: #16a34a; }
+  .status.err { color: #dc2626; }
+  .done { text-align: center; margin-top: 24px; color: #16a34a; font-size: 15px; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1><span class="brand">AI 写作助手</span></h1>
+  <p class="sub">选中任何文字 → 一键润色或翻译 · 3-Agent 流水线保证质量</p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body"><strong>配置 API Key</strong>（10秒，只此一次）</div>
+  </div>
+
+  <label>模型</label>
+  <select id="provider">
+    <option value="deepseek">DeepSeek（推荐 · 最便宜 ¥0.002/次）</option>
+    <option value="openai">OpenAI（质量好 $0.005/次）</option>
+    <option value="custom">自定义 API</option>
+  </select>
+
+  <div id="ds-section">
+    <label>DeepSeek API Key</label>
+    <input id="ds-key" type="password" placeholder="sk-..." autocomplete="off">
+    <p class="hint"><a href="https://platform.deepseek.com/api_keys" target="_blank">获取 Key</a></p>
+  </div>
+
+  <div id="oa-section" style="display:none">
+    <label>OpenAI API Key</label>
+    <input id="oa-key" type="password" placeholder="sk-..." autocomplete="off">
+  </div>
+
+  <div id="cu-section" style="display:none">
+    <label>API 地址</label>
+    <input id="cu-endpoint" type="text" placeholder="https://api.openai.com/v1/chat/completions">
+    <label>模型名称</label>
+    <input id="cu-model" type="text" placeholder="gpt-4o-mini">
+    <label>API Key</label>
+    <input id="cu-key" type="password" placeholder="sk-...">
+  </div>
+
+  <button class="btn" id="save-btn">保存并开始使用</button>
+  <div class="status" id="status"></div>
+
+  <div class="step" style="margin-top:24px">
+    <div class="step-num">2</div>
+    <div class="step-body"><strong>任意网页选中文字</strong> → 弹出「润色」和「翻译」按钮</div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body"><strong>点一下</strong> → Writer→Checker→Editor 三 Agent 自动处理</div>
+  </div>
+</div>
+
+<script src="welcome.js"></script>
+</body>
+</html>
